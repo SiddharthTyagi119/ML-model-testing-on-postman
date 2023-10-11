@@ -1,0 +1,5 @@
+create request
+body-> raw-> json
+choose post as a method
+enter url
+provide the input
