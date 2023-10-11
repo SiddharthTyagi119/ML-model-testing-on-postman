@@ -1,21 +1,52 @@
-import numpy as np
-from flask import Flask, request, jsonify, render_template
-import pickle
+from flask import Flask, render_template, request, jsonify
 
-# Create flask app
-flask_app = Flask(__name__)
-model = pickle.load(open("model.pkl", "rb"))
+app = Flask(__name__)
 
-@flask_app.route("/")
-def Home():
-    return render_template("index.html")
 
-@flask_app.route("/predict", methods = ["POST"])
-def predict():
-    float_features = [float(x) for x in request.form.values()]
-    features = [np.array(float_features)]
-    prediction = model.predict(features)
-    return render_template("index.html", prediction_text = "The flower species is {}".format(prediction))
+@app.route('/', methods=['GET', 'POST']) # To render Homepage
+def home_page():
+    return render_template('index.html')
 
-if __name__ == "__main__":
-    flask_app.run(debug=True)
+@app.route('/math', methods=['POST'])  # This will be called from UI
+def math_operation():
+    if (request.method=='POST'):
+        operation=request.form['operation']
+        num1=int(request.form['num1'])
+        num2 = int(request.form['num2'])
+        if(operation=='add'):
+            r=num1+num2
+            result= 'the sum of '+str(num1)+' and '+str(num2) +' is '+str(r)
+        if (operation == 'subtract'):
+            r = num1 - num2
+            result = 'the difference of ' + str(num1) + ' and ' + str(num2) + ' is ' + str(r)
+        if (operation == 'multiply'):
+            r = num1 * num2
+            result = 'the product of ' + str(num1) + ' and ' + str(num2) + ' is ' + str(r)
+        if (operation == 'divide'):
+            r = num1 / num2
+            result = 'the quotient when ' + str(num1) + ' is divided by ' + str(num2) + ' is ' + str(r)
+        return render_template('results.html',result=result)
+
+@app.route('/via_postman', methods=['POST']) # for calling the API from Postman/SOAPUI
+def math_operation_via_postman():
+    if (request.method=='POST'):
+        operation=request.json['operation']
+        num1=int(request.json['num1'])
+        num2 = int(request.json['num2'])
+        if(operation=='add'):
+            r=num1+num2
+            result= 'the sum of '+str(num1)+' and '+str(num2) +' is '+str(r)
+        if (operation == 'subtract'):
+            r = num1 - num2
+            result = 'the difference of ' + str(num1) + ' and ' + str(num2) + ' is ' + str(r)
+        if (operation == 'multiply'):
+            r = num1 * num2
+            result = 'the product of ' + str(num1) + ' and ' + str(num2) + ' is ' + str(r)
+        if (operation == 'divide'):
+            r = num1 / num2
+            result = 'the quotient when ' + str(num1) + ' is divided by ' + str(num2) + ' is ' + str(r)
+        return jsonify(result)
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
